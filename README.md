@@ -18,6 +18,15 @@ Alt-H1
 Alt-H2
 ------
 
+Emphasis, aka italics, with *asterisks* or _underscores_.
+
+Strong emphasis, aka bold, with **asterisks** or __underscores__.
+
+Combined emphasis with **asterisks and _underscores_**.
+
+Strikethrough uses two tildes. ~~Scratch this.~~
+
+
 1. First ordered list item
 2. Another item
 ⋅⋅* Unordered sub-list. 
@@ -34,3 +43,9 @@ Alt-H2
 * Unordered list can use asterisks
 - Or minuses
 + Or pluses
+
+
+
+[I'm an inline-style link](https://www.google.com)
+
+
