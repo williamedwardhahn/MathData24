@@ -1,6 +1,9 @@
 # MathData24
 Notes for Class
 
+<img src="https://www.usnews.com/dims4/USNEWS/7f83441/17177859217/resize/800x540%3E/quality/85/?url=https%3A%2F%2Fmedia.beam.usnews.com%2F94%2F43312647f96d895292321e35f4f5ad%2Ffau_37368267.jpg">
+
+
 ## Notes
 
 # H1
