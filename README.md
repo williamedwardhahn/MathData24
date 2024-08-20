@@ -36,4 +36,12 @@ Strikethrough uses two tildes. ~~Scratch this.~~
 
 [I'm an inline-style link](https://www.google.com)
 
+```python
+s = "Python syntax highlighting"
+print s
+```
 
+```
+import numpy
+a = 123
+```
