@@ -1,6 +1,8 @@
 # MathData24
 Notes for Class
 
+[Website](https://williamedwardhahn.github.io/MathData24/)
+
 <img src="https://www.flbog.edu/wp-content/uploads/fau-masthead-1024x427-1.jpg">
 
 
