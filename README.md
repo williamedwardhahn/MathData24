@@ -8,3 +8,7 @@
 
 ## Links
 [Spectrogram](https://musiclab.chromeexperiments.com/Spectrogram/)
+
+
+## Image Generator
+[Notebook](https://colab.research.google.com/drive/1PsL4pItVQ9wwBg_c0C-JjmpzwHTqG-7I?usp=sharing)
