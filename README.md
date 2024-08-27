@@ -3,7 +3,9 @@
 [My Website](https://williamedwardhahn.github.io/MathData24/)
 
 
-[Slides](https://docs.google.com/presentation/d/1yTMsjVTuRpQCWYUB5bRqmMdR3zbm4SHhc-cBgeQpjYM/edit?usp=sharing)
+[Slides 1](https://docs.google.com/presentation/d/1yTMsjVTuRpQCWYUB5bRqmMdR3zbm4SHhc-cBgeQpjYM/edit?usp=sharing)
+
+[Slides 2](https://docs.google.com/presentation/d/1ss2iAAUYeN-j5boRVToQ3sPHePaRNzgkVn74_7yO-9A/edit?usp=sharing)
 
 
 [Notebook 1](https://colab.research.google.com/drive/10W-q3ZJMBU-pClhYmIpqCUTw5RI7Q9li?usp=sharing)
