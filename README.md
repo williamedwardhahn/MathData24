@@ -8,6 +8,11 @@
 
 [Notebook 1](https://colab.research.google.com/drive/10W-q3ZJMBU-pClhYmIpqCUTw5RI7Q9li?usp=sharing)
 
+[Notebook 2](https://colab.research.google.com/drive/1dbvmhpaw-wr6qCSYac9ETltPs-1xAmVf?usp=sharing)
+
+
+
+
 ## Links
 [Spectrogram](https://musiclab.chromeexperiments.com/Spectrogram/)
 
