@@ -2,6 +2,8 @@
 
 [My Website](https://williamedwardhahn.github.io/MathData24/)
 
+[Class Websites](https://docs.google.com/document/d/1keUFaQA5kUqtoSFCIOTs_N5oD8jPkFGLPtlkFTok3Kk/edit?usp=sharing)
+
 
 [Slides 1](https://docs.google.com/presentation/d/1yTMsjVTuRpQCWYUB5bRqmMdR3zbm4SHhc-cBgeQpjYM/edit?usp=sharing)
 
