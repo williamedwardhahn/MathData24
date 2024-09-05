@@ -1,5 +1,10 @@
 # MathData24
 
+## Wave / OURI Grant 
+
+[Wave](https://www.fau.edu/innovation-and-business-development/fau-wave/)
+[OURI](https://www.fau.edu/ouri/undergraduate-grants/)
+
 [My Website](https://williamedwardhahn.github.io/MathData24/)
 
 [Class Websites](https://docs.google.com/document/d/1keUFaQA5kUqtoSFCIOTs_N5oD8jPkFGLPtlkFTok3Kk/edit?usp=sharing)
