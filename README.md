@@ -33,6 +33,8 @@
 
 ## Links
 
+[Linear Fit Demo](https://setosa.io/ev/ordinary-least-squares-regression/)
+
 [AI Data Science Video History](https://youtube.com/playlist?list=PLWmIsQcAzRkquFp4Qqyd_4-9Ve9wmJwiW&si=N3UBTBwnI--108dv)
 
 
