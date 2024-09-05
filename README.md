@@ -19,6 +19,7 @@
 
 [Notebook 2](https://colab.research.google.com/drive/1dbvmhpaw-wr6qCSYac9ETltPs-1xAmVf?usp=sharing)
 
+[Notebook 3](https://colab.research.google.com/drive/1Lce-HlzGL4YOv1Qj9NBljJR9A5P5rMVf?usp=sharing)
 
 <hr>
 
