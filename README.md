@@ -24,6 +24,10 @@
 <hr>
 
 ## Links
+
+[AI Data Science Video History](https://youtube.com/playlist?list=PLWmIsQcAzRkquFp4Qqyd_4-9Ve9wmJwiW&si=N3UBTBwnI--108dv)
+
+
 [Spectrogram](https://musiclab.chromeexperiments.com/Spectrogram/)
 
 
