@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Color Picker</title>
+    <style>
+        #colorBox {
+            width: 200px;
+            height: 200px;
+            background-color: white;
+            border: 2px solid black;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Random Color Picker</h1>
+
+    <div id="colorBox" onclick="changeColor()"></div>
+
+    <script>
+        function changeColor() {
+            const colors = ["red", "blue", "green", "teal", "pink", "purple", "orange", "skyblue"];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            document.getElementById("colorBox").style.backgroundColor = randomColor;
+        }
+    </script>
+</body>
+</html>
+
