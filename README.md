@@ -1,5 +1,7 @@
 # MathData24
 
+<img src="http://www.neural-forecasting.com/mlp_neural_nets-Dateien/image004.jpg">
+
 ## Wave / OURI Grant 
 
 [Wave](https://www.fau.edu/innovation-and-business-development/fau-wave/)
