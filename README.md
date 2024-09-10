@@ -29,7 +29,9 @@
 
 [Notebook 3](https://colab.research.google.com/drive/1Lce-HlzGL4YOv1Qj9NBljJR9A5P5rMVf?usp=sharing)
 
-<!-- [Notebook 4](https://colab.research.google.com/drive/1BYofXwntudpAyUSKEDOI6tyqQekDE2jT?usp=sharing) -->
+[Notebook 4](https://colab.research.google.com/drive/1aktifxNjetMVgA_V-_GrmL96rvOizAab?usp=sharing)
+
+<!-- [Notebook 5](https://colab.research.google.com/drive/1BYofXwntudpAyUSKEDOI6tyqQekDE2jT?usp=sharing) -->
 
 <hr>
 
