@@ -40,6 +40,8 @@
 
 [Notebook 6](https://colab.research.google.com/drive/1RwYdtzr6euKyKnt08hgdTMLIkTC9FJka?usp=sharing)
 
+[Notebook 7](https://colab.research.google.com/drive/1p_sV0E68Y0t0_HJzghETW5rqjFcqwI40?usp=sharing)
+
 <hr>
 
 ## Links
