@@ -20,6 +20,8 @@
 
 [Slides 2](https://docs.google.com/presentation/d/1ss2iAAUYeN-j5boRVToQ3sPHePaRNzgkVn74_7yO-9A/edit?usp=sharing)
 
+[Slides 3](https://docs.google.com/presentation/d/1vFdK18CYYsraKg1l1na5QL1lR8dOs5Pvor6DgbLIB3E/edit?usp=sharing)
+
 [TensorFlow Playground](https://playground.tensorflow.org/#activation=tanh&batchSize=10&dataset=gauss&regDataset=reg-plane&learningRate=0.03&regularizationRate=0&noise=0&networkShape=4,2&seed=0.95847&showTestData=false&discretize=false&percTrainData=50&x=true&y=true&xTimesY=false&xSquared=false&ySquared=false&cosX=false&sinX=false&cosY=false&sinY=false&collectStats=false&problem=classification&initZero=false&hideText=false)
 
 [TensorSpace.js](https://tensorspace.org/)
