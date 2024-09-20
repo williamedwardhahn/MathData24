@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitzHugh-Nagumo Reaction-Diffusion Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+        #controls {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>FitzHugh-Nagumo Reaction-Diffusion Simulation</h1>
+
+    <div id="controls">
+        <button id="restartBtn">Restart Simulation</button>
+    </div>
+
+    <canvas id="simulationCanvas" width="512" height="512"></canvas>
+    <div id="status">Running simulation...</div>
+
+    <script>
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 256;  // 256x256 grid
+        const cellSize = canvas.width / gridSize;
+
+        // Parameters
+        const h = 0.05;         // Time step
+        const a0 = -0.1;
+        const a1 = 2;
+        const epsilon = 0.05;
+        const delta = 4;
+        const k1 = 1;
+        const k2 = 0;
+        const k3 = 1;
+
+        // Laplacian kernel (as in your Python code)
+        const laplace = [
+            0.5, 1.0, 0.5,
+            1.0, -6.0, 1.0,
+            0.5, 1.0, 0.5
+        ];
+
+        let A, B, Anew, Bnew;  // Declare A and B globally
+
+        // Initialize fields A and B
+        function initializeFields() {
+            A = new Float32Array(gridSize * gridSize).fill(-0.7);  // A is initially filled with -0.7
+            B = new Float32Array(gridSize * gridSize).fill(-0.3);  // B is initially filled with -0.3
+
+            // Add random noise to a region of the grid (120:130)
+            for (let x = 120; x < 122; x++) {
+                for (let y = 50; y < 160; y++) {
+                    A[y * gridSize + x] = 3*Math.random() * 0.05 + 0.9;  // Noise in range [0.9, 0.95]
+                }
+            }
+
+            Anew = new Float32Array(gridSize * gridSize);
+            Bnew = new Float32Array(gridSize * gridSize);
+        }
+
+        // Circular padding function to handle boundaries
+        function getWithWrap(grid, x, y, width) {
+            x = (x + width) % width;
+            y = (y + width) % width;
+            return grid[y * width + x];
+        }
+
+        // Laplacian convolution function
+        function laplacian(grid, gridSize) {
+            const result = new Float32Array(grid.length);
+            const width = gridSize;
+
+            for (let x = 0; x < width; x++) {
+                for (let y = 0; y < width; y++) {
+                    let sum = 0;
+
+                    // Apply the 3x3 Laplacian filter
+                    sum += getWithWrap(grid, x - 1, y - 1, width) * laplace[0];
+                    sum += getWithWrap(grid, x, y - 1, width) * laplace[1];
+                    sum += getWithWrap(grid, x + 1, y - 1, width) * laplace[2];
+                    sum += getWithWrap(grid, x - 1, y, width) * laplace[3];
+                    sum += getWithWrap(grid, x, y, width) * laplace[4];
+                    sum += getWithWrap(grid, x + 1, y, width) * laplace[5];
+                    sum += getWithWrap(grid, x - 1, y + 1, width) * laplace[6];
+                    sum += getWithWrap(grid, x, y + 1, width) * laplace[7];
+                    sum += getWithWrap(grid, x + 1, y + 1, width) * laplace[8];
+
+                    result[y * width + x] = sum;
+                }
+            }
+
+            return result;
+        }
+
+        // Update fields A and B using FitzHugh-Nagumo dynamics
+        function updateFields() {
+            const laplaceA = laplacian(A, gridSize);
+            const laplaceB = laplacian(B, gridSize);
+
+            for (let i = 0; i < gridSize * gridSize; i++) {
+                // Update A (nonlinear dynamics with Laplacian)
+                Anew[i] = A[i] + h * (k1 * A[i] - k2 * A[i] ** 2 - A[i] ** 3 - B[i] + laplaceA[i]);
+
+                // Update B (reaction term with Laplacian)
+                Bnew[i] = B[i] + h * (epsilon * (k3 * A[i] - a1 * B[i] - a0) + delta * laplaceB[i]);
+            }
+
+            // Swap buffers
+            [A, Anew] = [Anew, A];
+            [B, Bnew] = [Bnew, B];
+        }
+
+        // Map A to color values (for visualization)
+        function mapValueToColor(value) {
+            // Normalize to the range 0 to 1
+            const normalizedValue = Math.min(1, Math.max(0, value));
+            const r = Math.floor(255 * normalizedValue);
+            const b = Math.floor(255 * (1 - normalizedValue));
+            return `rgb(${r}, 0, ${b})`;  // Blue to Red gradient
+        }
+
+        // Render the grid
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    const index = y * gridSize + x;
+                    const color = mapValueToColor(A[index]);
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        // Main simulation loop
+        let animationFrame;
+        function startSimulation() {
+            let stepCount = 0;
+            function step() {
+                for (let i = 0; i < 10; i++) {  // Run 10 updates per frame for smoother animation
+                    updateFields();
+                    stepCount++;
+                }
+
+                drawGrid();  // Render the updated grid
+                animationFrame = requestAnimationFrame(step);  // Continue the animation loop
+            }
+
+            step();  // Start the loop
+        }
+
+        // Function to restart simulation
+        function restartSimulation() {
+            cancelAnimationFrame(animationFrame);  // Stop the current animation
+            initializeFields();  // Reinitialize the fields
+            startSimulation();  // Restart the simulation
+        }
+
+        // Restart button
+        const restartBtn = document.getElementById('restartBtn');
+        restartBtn.addEventListener('click', restartSimulation);
+
+        // Initialize and start the simulation on page load
+        initializeFields();
+        startSimulation();
+    </script>
+</body>
+</html>
+
