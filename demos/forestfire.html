@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forest Fire Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+        #status {
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Forest Fire Simulation</h1>
+
+    <canvas id="simulationCanvas" width="500" height="500"></canvas>
+    <div id="status">Running simulation...</div>
+
+    <script>
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 100;  // 100x100 grid
+        const cellSize = canvas.width / gridSize;
+        let forestGrid = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));  // Initialize grid
+
+        // Define colors (RGB) and corresponding states
+        const treeColor = '#228B22';   // Green for tree
+        const fireColor = '#FF4500';   // Orange for fire
+        const emptyColor = '#FFF';     // White for empty cells
+
+        // Cell states in the forest fire model
+        const EMPTY = 0;
+        const TREE = 1;
+        const FIRE = 2;
+
+        // Simulation parameters
+        const GROWTH_PROBABILITY = 0.01;  // Probability of tree growth in an empty cell
+        const LIGHTNING_PROBABILITY = 0.0001;  // Probability of lightning striking a tree
+
+        // Initialize the grid with random trees and empty spaces
+        function setInitialConditions(grid) {
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    grid[i][j] = Math.random() < 0.6 ? TREE : EMPTY;  // 60% chance of being a tree
+                }
+            }
+        }
+
+        // Function to draw the grid onto the canvas
+        function drawForestGrid(grid) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let x = 0; x < grid.length; x++) {
+                for (let y = 0; y < grid[0].length; y++) {
+                    switch (grid[x][y]) {
+                        case EMPTY:
+                            ctx.fillStyle = emptyColor;
+                            break;
+                        case TREE:
+                            ctx.fillStyle = treeColor;
+                            break;
+                        case FIRE:
+                            ctx.fillStyle = fireColor;
+                            break;
+                    }
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        // Function to count the number of neighboring fire cells
+        function countFireNeighbors(grid, x, y) {
+            let sum = 0;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if (i === 0 && j === 0) continue;  // Skip the current cell
+                    const col = (x + i + grid.length) % grid.length;
+                    const row = (y + j + grid[0].length) % grid[0].length;
+                    if (grid[col][row] === FIRE) sum++;
+                }
+            }
+            return sum;
+        }
+
+        // Forest fire simulation logic (one step)
+        function forestFireStep(grid) {
+            const newGrid = JSON.parse(JSON.stringify(grid));  // Deep copy of the grid
+
+            for (let x = 0; x < grid.length; x++) {
+                for (let y = 0; y < grid[0].length; y++) {
+                    switch (grid[x][y]) {
+                        case EMPTY:
+                            // Spontaneously grow a tree with a certain probability
+                            if (Math.random() < GROWTH_PROBABILITY) {
+                                newGrid[x][y] = TREE;
+                            }
+                            break;
+                        case TREE:
+                            // If a neighboring cell is on fire, this tree catches fire
+                            if (countFireNeighbors(grid, x, y) > 0 || Math.random() < LIGHTNING_PROBABILITY) {
+                                newGrid[x][y] = FIRE;
+                            }
+                            break;
+                        case FIRE:
+                            // Burning trees turn into empty cells
+                            newGrid[x][y] = EMPTY;
+                            break;
+                    }
+                }
+            }
+
+            return newGrid;
+        }
+
+        // Start the Forest Fire simulation
+        function startForestFire() {
+            setInitialConditions(forestGrid);  // Set initial conditions
+            setInterval(() => {
+                forestGrid = forestFireStep(forestGrid);  // Update the grid
+                drawForestGrid(forestGrid);  // Draw the updated grid
+            }, 100);  // Update every 100ms
+        }
+
+        // Start the simulation
+        startForestFire();
+    </script>
+</body>
+</html>
+
