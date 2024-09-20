@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gray-Scott Reaction-Diffusion Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+        #status {
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gray-Scott Reaction-Diffusion Simulation</h1>
+
+    <canvas id="simulationCanvas" width="512" height="512"></canvas>
+    <div id="status">Running simulation...</div>
+
+    <script>
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 256;  // 256x256 grid
+        const cellSize = canvas.width / gridSize;
+
+        // Parameters (Fingerprint pattern)
+        const Du = 0.19;
+        const Dv = 0.05;
+        const F = 0.060;
+        const k = 0.062;
+
+        // Laplacian kernel (as in your Python code)
+        const laplace = [
+            0.5, 1.0, 0.5,
+            1.0, -6.0, 1.0,
+            0.5, 1.0, 0.5
+        ];
+
+        // Initialize chemicals U and V
+        let U = new Float32Array(gridSize * gridSize).fill(1.0);  // U is initially filled with 1.0
+        let V = new Float32Array(gridSize * gridSize);  // V is initially 0
+
+        // Add disturbance in the center (radius r)
+        const r = 5;
+        for (let x = gridSize / 2 - r; x < gridSize / 2 + r; x++) {
+            for (let y = gridSize / 2 - r; y < gridSize / 2 + r; y++) {
+                U[y * gridSize + x] = 0.50;
+                V[y * gridSize + x] = 0.25;
+            }
+        }
+
+        // Add random noise to the initial chemicals
+        for (let i = 0; i < gridSize * gridSize; i++) {
+            U[i] += 0.05 * Math.random();
+            V[i] += 0.05 * Math.random();
+        }
+
+        let Unew = new Float32Array(gridSize * gridSize);
+        let Vnew = new Float32Array(gridSize * gridSize);
+
+        // Circular padding function to handle boundaries
+        function getWithWrap(grid, x, y, width) {
+            x = (x + width) % width;
+            y = (y + width) % width;
+            return grid[y * width + x];
+        }
+
+        // Laplacian convolution function
+        function laplacian(grid, gridSize) {
+            const result = new Float32Array(grid.length);
+            const width = gridSize;
+
+            for (let x = 0; x < width; x++) {
+                for (let y = 0; y < width; y++) {
+                    let sum = 0;
+
+                    // Apply the 3x3 Laplacian filter
+                    sum += getWithWrap(grid, x - 1, y - 1, width) * laplace[0];
+                    sum += getWithWrap(grid, x, y - 1, width) * laplace[1];
+                    sum += getWithWrap(grid, x + 1, y - 1, width) * laplace[2];
+                    sum += getWithWrap(grid, x - 1, y, width) * laplace[3];
+                    sum += getWithWrap(grid, x, y, width) * laplace[4];
+                    sum += getWithWrap(grid, x + 1, y, width) * laplace[5];
+                    sum += getWithWrap(grid, x - 1, y + 1, width) * laplace[6];
+                    sum += getWithWrap(grid, x, y + 1, width) * laplace[7];
+                    sum += getWithWrap(grid, x + 1, y + 1, width) * laplace[8];
+
+                    result[y * width + x] = sum;
+                }
+            }
+
+            return result;
+        }
+
+        // Update chemicals U and V using Gray-Scott reaction-diffusion equations
+        function updateFields() {
+            const laplaceU = laplacian(U, gridSize);
+            const laplaceV = laplacian(V, gridSize);
+
+            for (let i = 0; i < gridSize * gridSize; i++) {
+                Unew[i] = U[i] + (Du * laplaceU[i] - U[i] * V[i] ** 2 + F * (1 - U[i]));
+                Vnew[i] = V[i] + (Dv * laplaceV[i] + U[i] * V[i] ** 2 - (F + k) * V[i]);
+            }
+
+            // Swap buffers
+            [U, Unew] = [Unew, U];
+            [V, Vnew] = [Vnew, V];
+        }
+
+        // Map U to color values (for visualization)
+        function mapValueToColor(value) {
+            // Normalize to the range 0 to 1
+            const normalizedValue = Math.min(1, Math.max(0, value));
+            const r = Math.floor(255 * normalizedValue);
+            const b = Math.floor(255 * (1 - normalizedValue));
+            return `rgb(${r}, 0, ${b})`;  // Blue to Red gradient
+        }
+
+        // Render the grid
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    const index = y * gridSize + x;
+                    const color = mapValueToColor(U[index]);
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        // Main simulation loop
+        function startSimulation() {
+            let stepCount = 0;
+            function step() {
+                for (let i = 0; i < 10; i++) {  // Run 10 updates per frame for smoother animation
+                    updateFields();
+                    stepCount++;
+                }
+
+                drawGrid();  // Render the updated grid
+                requestAnimationFrame(step);  // Continue the animation loop
+            }
+
+            step();  // Start the loop
+        }
+
+        // Start the simulation
+        startSimulation();
+    </script>
+</body>
+</html>
+
