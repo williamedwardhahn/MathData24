@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitzHugh-Nagumo Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+        #status {
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>FitzHugh-Nagumo Reaction-Diffusion Simulation</h1>
+
+    <canvas id="simulationCanvas" width="512" height="512"></canvas>
+    <div id="status">Running simulation...</div>
+
+    <script>
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 256;  // 256x256 grid
+        const cellSize = canvas.width / gridSize;
+
+        // Simulation parameters
+        const h = 0.05;         // Time step
+        const a0 = -0.1;
+        const a1 = 2;
+        const epsilon = 0.05;
+        const delta = 4;
+        const k1 = 1;
+        const k2 = 0;
+        const k3 = 1;
+
+        // Laplacian filter as in your Python code
+        const laplace = [
+            [0.5, 1.0, 0.5],
+            [1.0, -6.0, 1.0],
+            [0.5, 1.0, 0.5]
+        ];
+
+        // Initialize excitation (A) and recovery (B) fields
+        let A = Array(gridSize).fill(0).map(() => Array(gridSize).fill(-0.7));  // Excitation variable
+        let B = Array(gridSize).fill(0).map(() => Array(gridSize).fill(-0.3));  // Recovery variable
+
+        // Add random noise to a specific region of the grid (same as your Python code)
+        const noiseStart = 120;
+        const noiseEnd = 130;
+        for (let x = noiseStart; x < noiseEnd; x++) {
+            for (let y = 0; y < gridSize; y++) {
+                A[y][x] = Math.random() * 0.05 + 0.9;  // Noise in range [0.9, 0.95]
+            }
+        }
+
+        // Circular padding function to handle boundary conditions (circular wrapping)
+        function circularPad(grid) {
+            const padded = Array(gridSize + 2).fill(0).map(() => Array(gridSize + 2).fill(0));
+
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    padded[x + 1][y + 1] = grid[x][y];
+                }
+            }
+
+            // Wrap around edges
+            for (let i = 0; i < gridSize; i++) {
+                padded[i + 1][0] = grid[i][gridSize - 1];
+                padded[i + 1][gridSize + 1] = grid[i][0];
+                padded[0][i + 1] = grid[gridSize - 1][i];
+                padded[gridSize + 1][i + 1] = grid[0][i];
+            }
+
+            // Wrap corners
+            padded[0][0] = grid[gridSize - 1][gridSize - 1];
+            padded[gridSize + 1][gridSize + 1] = grid[0][0];
+            padded[0][gridSize + 1] = grid[gridSize - 1][0];
+            padded[gridSize + 1][0] = grid[0][gridSize - 1];
+
+            return padded;
+        }
+
+        // Laplacian convolution function
+        function laplacian(grid) {
+            const paddedGrid = circularPad(grid);
+            const laplaceGrid = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));
+
+            for (let x = 1; x < gridSize + 1; x++) {
+                for (let y = 1; y < gridSize + 1; y++) {
+                    let sum = 0;
+                    for (let i = -1; i <= 1; i++) {
+                        for (let j = -1; j <= 1; j++) {
+                            sum += paddedGrid[x + i][y + j] * laplace[i + 1][j + 1];
+                        }
+                    }
+                    laplaceGrid[x - 1][y - 1] = sum;
+                }
+            }
+
+            return laplaceGrid;
+        }
+
+        // Update the fields using FitzHugh-Nagumo equations
+        function updateFields() {
+            const laplaceA = laplacian(A);
+            const laplaceB = laplacian(B);
+
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    // FitzHugh-Nagumo equations
+                    const fA = k1 * A[x][y] - k2 * A[x][y] ** 2 - A[x][y] ** 3 - B[x][y];
+                    A[x][y] += h * (fA + laplaceA[x][y]);
+
+                    const fB = epsilon * (k3 * A[x][y] - a1 * B[x][y] - a0);
+                    B[x][y] += h * (fB + delta * laplaceB[x][y]);
+                }
+            }
+        }
+
+        // Map excitation variable A to color values (for blue-red gradient)
+        function mapValueToColor(value) {
+            const min = -1;
+            const max = 1;
+            value = (value - min) / (max - min);  // Normalize to [0, 1]
+
+            const r = Math.min(255, Math.max(0, Math.floor(255 * value)));
+            const b = Math.min(255, Math.max(0, Math.floor(255 * (1 - value))));
+            return `rgb(${r}, 0, ${b})`;  // Blue to Red gradient
+        }
+
+        // Function to draw the excitation field (A) onto the canvas
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    const color = mapValueToColor(A[x][y]);
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        // Simulation loop
+        function startSimulation() {
+            let frameCount = 0;
+            function step() {
+                for (let i = 0; i < 1000; i++) { // Multiple updates per render
+                    updateFields();
+                }
+                drawGrid();  // Render the updated grid
+                frameCount++;
+                requestAnimationFrame(step);  // Continue the simulation loop
+            }
+
+            step();  // Start the loop
+        }
+
+        // Start the simulation
+        startSimulation();
+    </script>
+</body>
+</html>
+
