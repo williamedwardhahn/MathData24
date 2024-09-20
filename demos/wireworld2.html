@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireworld Simulation from Local Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+        #status {
+            margin-top: 20px;
+            color: red;
+        }
+        img {
+            margin-top: 20px;
+            border: 2px solid #000;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wireworld Simulation from Image</h1>
+
+    <!-- Display the image on the page -->
+    <img id="loadedImage" src="primes.png" alt="Wireworld Image">
+
+    <canvas id="simulationCanvas" width="500" height="500"></canvas>
+    <div id="status">Loading image...</div>
+
+    <script>
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 100;  // Adjust based on image size or canvas size
+        const cellSize = canvas.width / gridSize;
+        let wireworldGrid;
+        const status = document.getElementById('status');
+
+        // Define colors (RGB) and corresponding states
+        const wireColor = [255, 128, 0];   // Orange color for wire
+        const headColor = [0, 128, 255];   // Blue for electron head
+        const tailColor = [255, 255, 255]; // White for electron tail
+
+        // Cell states in Wireworld
+        const EMPTY = 0;
+        const ELECTRON_HEAD = 1;
+        const ELECTRON_TAIL = 2;
+        const CONDUCTOR = 3;
+
+        // Function to load the image and initialize the grid
+        function loadImage(url, callback) {
+            const img = new Image();
+            img.src = url;
+
+            img.onload = function() {
+                // Create a temporary canvas to extract pixel data
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = img.width;
+                tempCanvas.height = img.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.drawImage(img, 0, 0);
+
+                const imageData = tempCtx.getImageData(0, 0, img.width, img.height);
+                const data = imageData.data;
+
+                wireworldGrid = [];
+                for (let y = 0; y < img.height; y++) {
+                    const row = [];
+                    for (let x = 0; x < img.width; x++) {
+                        const index = (y * img.width + x) * 4;  // RGBA values
+
+                        const r = data[index];
+                        const g = data[index + 1];
+                        const b = data[index + 2];
+
+                        if (r === wireColor[0] && g === wireColor[1] && b === wireColor[2]) {
+                            row.push(CONDUCTOR);
+                        } else if (r === headColor[0] && g === headColor[1] && b === headColor[2]) {
+                            row.push(ELECTRON_HEAD);
+                        } else if (r === tailColor[0] && g === tailColor[1] && b === tailColor[2]) {
+                            row.push(ELECTRON_TAIL);
+                        } else {
+                            row.push(EMPTY);
+                        }
+                    }
+                    wireworldGrid.push(row);
+                }
+
+                status.innerHTML = "Image loaded. Starting simulation...";
+                callback();
+            };
+
+            img.onerror = function() {
+                status.innerHTML = "Failed to load image. Please check the image path.";
+            };
+        }
+
+        // Function to draw the grid onto the canvas
+        function drawWireworldGrid(grid) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let x = 0; x < grid.length; x++) {
+                for (let y = 0; y < grid[0].length; y++) {
+                    switch (grid[x][y]) {
+                        case EMPTY:
+                            ctx.fillStyle = '#FFF';  // White for empty
+                            break;
+                        case ELECTRON_HEAD:
+                            ctx.fillStyle = '#00F';  // Blue for electron head
+                            break;
+                        case ELECTRON_TAIL:
+                            ctx.fillStyle = '#F00';  // Red for electron tail
+                            break;
+                        case CONDUCTOR:
+                            ctx.fillStyle = '#FFA500';  // Orange for conductor
+                            break;
+                    }
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        // Function to count the number of electron heads in the neighborhood
+        function countElectronHeadNeighbors(grid, x, y) {
+            let sum = 0;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if (i === 0 && j === 0) continue;  // Skip the current cell
+                    const col = (x + i + grid.length) % grid.length;
+                    const row = (y + j + grid[0].length) % grid[0].length;
+                    if (grid[col][row] === ELECTRON_HEAD) sum++;
+                }
+            }
+            return sum;
+        }
+
+        // Wireworld simulation logic (one step)
+        function wireworldStep(grid) {
+            const newGrid = JSON.parse(JSON.stringify(grid));  // Deep copy of the grid
+
+            for (let x = 0; x < grid.length; x++) {
+                for (let y = 0; y < grid[0].length; y++) {
+                    switch (grid[x][y]) {
+                        case ELECTRON_HEAD:
+                            newGrid[x][y] = ELECTRON_TAIL;  // Head becomes tail
+                            break;
+                        case ELECTRON_TAIL:
+                            newGrid[x][y] = CONDUCTOR;  // Tail becomes conductor
+                            break;
+                        case CONDUCTOR:
+                            const neighbors = countElectronHeadNeighbors(grid, x, y);
+                            if (neighbors === 1 || neighbors === 2) {
+                                newGrid[x][y] = ELECTRON_HEAD;  // Conductor becomes electron head
+                            }
+                            break;
+                    }
+                }
+            }
+
+            return newGrid;
+        }
+
+        // Start the Wireworld simulation
+        function startWireworld() {
+            setInterval(() => {
+                wireworldGrid = wireworldStep(wireworldGrid);
+                drawWireworldGrid(wireworldGrid);
+            }, 100);  // Update every 100ms
+        }
+
+        // Load the local image and then start the simulation
+        loadImage('primes.png', startWireworld);
+    </script>
+</body>
+</html>
+

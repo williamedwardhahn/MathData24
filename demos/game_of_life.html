@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of Life</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game of Life</h1>
+    <canvas id="simulationCanvas" width="500" height="500"></canvas>
+
+    <script>
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 100;
+        const cellSize = canvas.width / gridSize;
+        let interval;
+
+        // Initialize a grid with random states (1 or 0)
+        function generateGrid(probability = 0.5) {
+            return Array.from({ length: gridSize }, () =>
+                Array.from({ length: gridSize }, () => Math.random() < probability ? 1 : 0)
+            );
+        }
+
+        // Function to draw the grid onto the canvas
+        function drawGrid(grid) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    ctx.fillStyle = grid[x][y] ? '#000' : '#FFF';
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        // Function to count neighbors of a cell
+        function countNeighbors(grid, x, y) {
+            let sum = 0;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    const col = (x + i + gridSize) % gridSize;
+                    const row = (y + j + gridSize) % gridSize;
+                    sum += grid[col][row];
+                }
+            }
+            sum -= grid[x][y];  // Exclude the cell itself
+            return sum;
+        }
+
+        // Game of Life step logic
+        function gameOfLifeStep(grid) {
+            const newGrid = JSON.parse(JSON.stringify(grid));
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    const neighbors = countNeighbors(grid, x, y);
+                    if (grid[x][y]) {
+                        // Any live cell with 2 or 3 neighbors survives
+                        newGrid[x][y] = neighbors === 2 || neighbors === 3 ? 1 : 0;
+                    } else {
+                        // Any dead cell with exactly 3 neighbors becomes a live cell
+                        newGrid[x][y] = neighbors === 3 ? 1 : 0;
+                    }
+                }
+            }
+            return newGrid;
+        }
+
+        // Start the Game of Life simulation
+        function startGameOfLife() {
+            let grid = generateGrid(0.5);
+
+            interval = setInterval(() => {
+                grid = gameOfLifeStep(grid);
+                drawGrid(grid);
+            }, 100);  // Update every 100ms
+        }
+
+        // Start the simulation
+        startGameOfLife();
+    </script>
+</body>
+</html>
+
