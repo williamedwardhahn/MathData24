@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireworld Simulation with Canvas Rotation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+        #status {
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wireworld Simulation (Rotated 90° Counterclockwise)</h1>
+
+    <canvas id="simulationCanvas" width="500" height="500"></canvas>
+    <div id="status">Running simulation...</div>
+
+    <script>
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 100;  // 100x100 grid
+        const cellSize = canvas.width / gridSize;
+        let wireworldGrid = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));  // Initialize grid
+
+        // Define colors (RGB) and corresponding states
+        const wireColor = '#FFA500';   // Orange for wire
+        const headColor = '#00F';      // Blue for electron head
+        const tailColor = '#F00';      // Red for electron tail
+        const emptyColor = '#FFF';     // White for empty cells
+
+        // Cell states in Wireworld
+        const EMPTY = 0;
+        const ELECTRON_HEAD = 1;
+        const ELECTRON_TAIL = 2;
+        const CONDUCTOR = 3;
+
+        // Rotate canvas 90 degrees counterclockwise
+        function rotateCanvas() {
+            ctx.translate(0, canvas.height);  // Move the origin to the bottom-left
+            ctx.rotate(-Math.PI / 2);         // Rotate 90 degrees counterclockwise
+        }
+
+        // Set initial conditions based on provided Python code
+        function setInitialConditions(grid) {
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    grid[i][j] = EMPTY;
+                }
+            }
+
+            // Add wire configurations
+            for (let i = 15; i < gridSize - 1; i++) {
+                grid[50][i] = CONDUCTOR;
+            }
+            for (let i = 5; i < 15; i++) {
+                grid[48][i] = CONDUCTOR;
+                grid[52][i] = CONDUCTOR;
+            }
+            grid[49][4] = CONDUCTOR;
+            grid[50][4] = CONDUCTOR;
+            grid[51][4] = CONDUCTOR;
+            grid[49][15] = CONDUCTOR;
+            grid[50][15] = CONDUCTOR;
+            grid[51][15] = CONDUCTOR;
+
+            // Second wire
+            for (let i = 15; i < gridSize - 1; i++) {
+                grid[20][i] = CONDUCTOR;
+            }
+            for (let i = 13; i < 15; i++) {
+                grid[18][i] = CONDUCTOR;
+                grid[22][i] = CONDUCTOR;
+            }
+            grid[19][12] = CONDUCTOR;
+            grid[20][12] = CONDUCTOR;
+            grid[21][12] = CONDUCTOR;
+            grid[19][15] = CONDUCTOR;
+            grid[20][15] = CONDUCTOR;
+            grid[21][15] = CONDUCTOR;
+
+            // Set electron head and tail
+            grid[22][14] = ELECTRON_HEAD;
+            grid[22][13] = ELECTRON_TAIL;
+            grid[52][14] = ELECTRON_HEAD;
+            grid[52][13] = ELECTRON_TAIL;
+        }
+
+        // Function to draw the grid onto the rotated canvas
+        function drawWireworldGrid(grid) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let x = 0; x < grid.length; x++) {
+                for (let y = 0; y < grid[0].length; y++) {
+                    switch (grid[x][y]) {
+                        case EMPTY:
+                            ctx.fillStyle = emptyColor;
+                            break;
+                        case ELECTRON_HEAD:
+                            ctx.fillStyle = headColor;
+                            break;
+                        case ELECTRON_TAIL:
+                            ctx.fillStyle = tailColor;
+                            break;
+                        case CONDUCTOR:
+                            ctx.fillStyle = wireColor;
+                            break;
+                    }
+                    // Draw the cell on the rotated canvas
+                    ctx.fillRect(y * cellSize, x * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        // Function to count the number of electron heads in the neighborhood
+        function countElectronHeadNeighbors(grid, x, y) {
+            let sum = 0;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if (i === 0 && j === 0) continue;  // Skip the current cell
+                    const col = (x + i + grid.length) % grid.length;
+                    const row = (y + j + grid[0].length) % grid[0].length;
+                    if (grid[col][row] === ELECTRON_HEAD) sum++;
+                }
+            }
+            return sum;
+        }
+
+        // Wireworld simulation logic (one step)
+        function wireworldStep(grid) {
+            const newGrid = JSON.parse(JSON.stringify(grid));  // Deep copy of the grid
+
+            for (let x = 0; x < grid.length; x++) {
+                for (let y = 0; y < grid[0].length; y++) {
+                    switch (grid[x][y]) {
+                        case ELECTRON_HEAD:
+                            newGrid[x][y] = ELECTRON_TAIL;  // Head becomes tail
+                            break;
+                        case ELECTRON_TAIL:
+                            newGrid[x][y] = CONDUCTOR;  // Tail becomes conductor
+                            break;
+                        case CONDUCTOR:
+                            const neighbors = countElectronHeadNeighbors(grid, x, y);
+                            if (neighbors === 1 || neighbors === 2) {
+                                newGrid[x][y] = ELECTRON_HEAD;  // Conductor becomes electron head
+                            }
+                            break;
+                    }
+                }
+            }
+
+            return newGrid;
+        }
+
+        // Start the Wireworld simulation
+        function startWireworld() {
+            rotateCanvas();  // Apply rotation to the canvas
+            setInitialConditions(wireworldGrid);  // Set initial conditions
+            setInterval(() => {
+                wireworldGrid = wireworldStep(wireworldGrid);  // Update the grid
+                drawWireworldGrid(wireworldGrid);  // Draw the updated grid
+            }, 100);  // Update every 100ms
+        }
+
+        // Start the simulation
+        startWireworld();
+    </script>
+</body>
+</html>
+
