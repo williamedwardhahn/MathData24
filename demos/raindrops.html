@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raindrop Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+        #status {
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Raindrop Simulation</h1>
+
+    <canvas id="simulationCanvas" width="512" height="512"></canvas>
+    <div id="status">Running simulation...</div>
+
+    <script>
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 256;  // 256x256 grid
+        const canvasSize = 512;  // Make the canvas square
+        const cellSize = canvasSize / gridSize;  // Adjust cell size based on the grid and canvas dimensions
+
+        // Simulation parameters
+        const h = 0.03;        // Time step
+        const damping = 0.04;  // Damping factor
+
+        // Laplacian filter
+        const laplace = [
+            [0.25, 0.5, 0.25],
+            [0.5, -3, 0.5],
+            [0.25, 0.5, 0.25]
+        ];
+
+        // Initialize height (U) and velocity (Ut) fields
+        let U = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));
+        let Ut = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));
+
+        // Initialize random disturbances (raindrops)
+        function setInitialConditions() {
+            for (let i = 0; i < 6; i++) {
+                const x = Math.floor(Math.random() * gridSize);
+                const y = Math.floor(Math.random() * gridSize);
+                U[x][y] = Math.random();  // Random disturbance
+            }
+        }
+
+        // Convolution-like function to compute the Laplacian (2D second derivative)
+        function laplacian(grid) {
+            const laplaceGrid = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));
+
+            for (let x = 1; x < gridSize - 1; x++) {
+                for (let y = 1; y < gridSize - 1; y++) {
+                    let sum = 0;
+                    for (let i = -1; i <= 1; i++) {
+                        for (let j = -1; j <= 1; j++) {
+                            sum += grid[x + i][y + j] * laplace[i + 1][j + 1];
+                        }
+                    }
+                    laplaceGrid[x][y] = sum;
+                }
+            }
+
+            return laplaceGrid;
+        }
+
+        // Update the height (U) and velocity (Ut) fields
+        function updateWave() {
+            const laplaceU = laplacian(U);
+
+            for (let x = 1; x < gridSize - 1; x++) {
+                for (let y = 1; y < gridSize - 1; y++) {
+                    Ut[x][y] += h * (laplaceU[x][y] - damping * Ut[x][y]);  // Update velocity
+                    U[x][y] += h * Ut[x][y];  // Update height
+                }
+            }
+        }
+
+        // Map value to color using a blue gradient
+        function mapValueToColor(value) {
+            const min = -0.01;
+            const max = 0.01;
+            value = (value - min) / (max - min);  // Normalize between 0 and 1
+
+            const blueIntensity = Math.min(255, Math.max(0, Math.floor(255 * value)));
+            return `rgb(0, ${Math.floor(blueIntensity * 0.5)}, ${blueIntensity})`;  // Gradient from light to dark blue
+        }
+
+        // Function to draw the height field (U) onto the canvas
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    const color = mapValueToColor(U[x][y]);
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        // Start the simulation
+        function startRaindropSimulation() {
+            setInitialConditions();  // Set initial raindrop disturbances
+
+            function step() {
+                updateWave();  // Update the height and velocity fields
+                drawGrid();    // Render the grid
+                requestAnimationFrame(step);  // Continue the animation
+            }
+
+            step();  // Begin the animation loop
+        }
+
+        // Start the simulation
+        startRaindropSimulation();
+    </script>
+</body>
+</html>
+
