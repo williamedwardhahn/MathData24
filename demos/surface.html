@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surface Tension Simulation (Python-like)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+        #status {
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Surface Tension Simulation (Python-like)</h1>
+
+    <canvas id="simulationCanvas" width="500" height="500"></canvas>
+    <div id="status">Running simulation...</div>
+
+    <script>
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 100;  // 100x100 grid
+        const cellSize = canvas.width / gridSize;
+        let surfaceGrid = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));  // Initialize grid
+
+        // Define colors (RGB) and corresponding states
+        const fluidColor = '#1E90FF';   // Blue for fluid
+        const emptyColor = '#FFF';      // White for empty cells
+
+        // Cell states in the surface tension model
+        const EMPTY = 0;
+        const FLUID = 1;
+
+        // Initialize the grid with random fluid and empty cells
+        function setInitialConditions(grid) {
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    grid[x][y] = Math.random() > 0.3 ? FLUID : EMPTY;  // Randomly fill cells
+                }
+            }
+        }
+
+        // Convolution-like function to sum the neighbors of each cell using a 3x3 matrix filter
+        function conv2(grid, filter) {
+            const newGrid = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));
+
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    let sum = 0;
+                    for (let i = -1; i <= 1; i++) {
+                        for (let j = -1; j <= 1; j++) {
+                            const col = (x + i + gridSize) % gridSize;
+                            const row = (y + j + gridSize) % gridSize;
+                            sum += grid[col][row] * filter[i + 1][j + 1];
+                        }
+                    }
+                    newGrid[x][y] = sum;
+                }
+            }
+            return newGrid;
+        }
+
+        // Update rule: ~((n < 4) + (n == 5))
+        function applyUpdateRule(w, neighbors) {
+            const newGrid = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));
+
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    const n = neighbors[x][y];
+                    // Python logic: ~((n < 4) + (n == 5))
+                    if (!(n < 4 || n === 5)) {
+                        newGrid[x][y] = FLUID;  // Becomes fluid
+                    } else {
+                        newGrid[x][y] = EMPTY;  // Becomes empty
+                    }
+                }
+            }
+
+            return newGrid;
+        }
+
+        // Function to draw the grid onto the canvas
+        function drawSurfaceGrid(grid) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let x = 0; x < grid.length; x++) {
+                for (let y = 0; y < grid[0].length; y++) {
+                    ctx.fillStyle = grid[x][y] === FLUID ? fluidColor : emptyColor;
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        // Surface tension simulation logic (one step)
+        function surfaceTensionStep(grid) {
+            const filter = [
+                [1, 1, 1],
+                [1, 0, 1],  // Center (0,0) is excluded from counting itself
+                [1, 1, 1]
+            ];
+
+            const neighbors = conv2(grid, filter);  // Count neighbors using the convolution filter
+            return applyUpdateRule(grid, neighbors);  // Apply the update rule to determine the next state
+        }
+
+        // Start the Surface Tension simulation
+        function startSurfaceTension() {
+            setInitialConditions(surfaceGrid);  // Set random initial conditions
+            setInterval(() => {
+                surfaceGrid = surfaceTensionStep(surfaceGrid);  // Update the grid
+                drawSurfaceGrid(surfaceGrid);  // Draw the updated grid
+            }, 100);  // Update every 100ms
+        }
+
+        // Start the simulation
+        startSurfaceTension();
+    </script>
+</body>
+</html>
+

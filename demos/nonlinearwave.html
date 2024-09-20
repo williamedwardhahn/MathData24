@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nonlinear Waves Simulation with Smooth Colors</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+        #status {
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Nonlinear Waves Simulation with Smooth Colors</h1>
+
+    <canvas id="simulationCanvas" width="500" height="500"></canvas>
+    <div id="status">Running simulation...</div>
+
+    <script>
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 100;  // 100x100 grid
+        const cellSize = canvas.width / gridSize;
+        let waveGrid = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));  // Initialize grid
+
+        // Simulation parameters
+        const t = 6;  // Center value for wave threshold
+        const t1 = 3;  // Threshold for triggering a new wave
+        const maxWaveState = 9;  // Maximum wave state before resetting
+
+        // Random initial condition: 10% chance of wave activity (state > 0)
+        function setInitialConditions(grid) {
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    grid[x][y] = Math.random() < 0.05 ? Math.floor(Math.random() * maxWaveState) + 1 : 0;  // Random initial state
+                }
+            }
+        }
+
+        // Convolution-like function to sum the neighbors of each cell using a 3x3 matrix filter
+        function conv2(grid, filter) {
+            const newGrid = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));
+
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    let sum = 0;
+                    for (let i = -1; i <= 1; i++) {
+                        for (let j = -1; j <= 1; j++) {
+                            if (i === 0 && j === 0) continue;  // Skip the center cell
+                            const col = (x + i + gridSize) % gridSize;
+                            const row = (y + j + gridSize) % gridSize;
+                            sum += (grid[col][row] > 0 && grid[col][row] < t) ? 1 : 0;
+                        }
+                    }
+                    newGrid[x][y] = sum;
+                }
+            }
+            return newGrid;
+        }
+
+        // Update rule for nonlinear wave simulation
+        function applyUpdateRule(w, neighbors) {
+            const newGrid = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));
+
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    const waveValue = w[x][y];
+                    const neighborCount = neighbors[x][y];
+
+                    // Apply the rules to evolve the wave states based on neighbors
+                    if (waveValue === 0 && neighborCount >= t1) {
+                        newGrid[x][y] = 1;  // Start a new wave if enough active neighbors
+                    } else if (waveValue > 0) {
+                        newGrid[x][y] = (waveValue < maxWaveState) ? waveValue + 1 : 0;  // Evolve wave or reset
+                    }
+                }
+            }
+
+            return newGrid;
+        }
+
+        // Generate a smooth color for a wave value (from 0 to maxWaveState)
+        function getColorForWaveValue(value) {
+            const hue = (value / maxWaveState) * 90 + 180;  // Convert wave value to hue (0-360 degrees)
+            return `hsl(${hue}, 100%, 50%)`;  // Use HSL to generate a smooth gradient
+        }
+
+        // Function to draw the grid onto the canvas with smooth color mapping
+        function drawWaveGrid(grid) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let x = 0; x < grid.length; x++) {
+                for (let y = 0; y < grid[0].length; y++) {
+                    const waveState = grid[x][y];
+                    ctx.fillStyle = waveState === 0 ? '#FFF' : getColorForWaveValue(waveState);
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        // Nonlinear wave simulation logic (one step)
+        function waveSimulationStep(grid) {
+            const filter = [
+                [1, 1, 1],
+                [1, 0, 1],  // Center (0,0) is excluded from counting itself
+                [1, 1, 1]
+            ];
+
+            const neighbors = conv2(grid, filter);  // Count neighbors using the convolution filter
+            return applyUpdateRule(grid, neighbors);  // Apply the update rule to determine the next state
+        }
+
+        // Start the Nonlinear Waves simulation
+        function startWaveSimulation() {
+            setInitialConditions(waveGrid);  // Set random initial conditions
+            setInterval(() => {
+                waveGrid = waveSimulationStep(waveGrid);  // Update the grid
+                drawWaveGrid(waveGrid);  // Draw the updated grid
+            }, 100);  // Update every 100ms
+        }
+
+        // Start the simulation
+        startWaveSimulation();
+    </script>
+</body>
+</html>
+
