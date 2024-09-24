@@ -44,6 +44,8 @@
 
 [Notebook 7](https://colab.research.google.com/drive/1p_sV0E68Y0t0_HJzghETW5rqjFcqwI40?usp=sharing)
 
+[Notebook 8](https://colab.research.google.com/drive/1DLSR86EyE580Wa2v28UWH51vpe_aOjxV?usp=sharing)
+
 <hr>
 
 ## Links
