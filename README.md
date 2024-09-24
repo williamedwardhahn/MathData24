@@ -50,6 +50,8 @@
 
 ## Links
 
+[Alexnet Viz](https://www.youtube.com/watch?v=AgkfIQ4IGaM)
+
 [Linear Fit Demo](https://setosa.io/ev/ordinary-least-squares-regression/)
 
 [Image Kernels](https://setosa.io/ev/image-kernels/)
