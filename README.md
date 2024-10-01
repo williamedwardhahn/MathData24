@@ -46,6 +46,29 @@
 
 [Notebook 8](https://colab.research.google.com/drive/1DLSR86EyE580Wa2v28UWH51vpe_aOjxV?usp=sharing)
 
+### Alexnet Notebooks
+
+[101](https://colab.research.google.com/drive/1KtSLskWK1_BnJ9OaKdRc64PS59cgSiUI?usp=sharing)
+
+[Functional](https://colab.research.google.com/drive/1EswELI93Lz4Cfc2rcwE_KuVqzLPvKHsW?usp=sharing)
+
+[Load Slides](https://colab.research.google.com/drive/14LTcixe0I2B_eU55yklsRdBrKlA2CEeh?usp=sharing)
+
+[Load Folder](https://colab.research.google.com/drive/14NGFa-BeiUpls-9AuYXgNnI23l1QcpOf?usp=sharing)
+
+[Feature Maps](https://colab.research.google.com/drive/1GayNzpgXh9NlFEGtZ9_khlLRFrW27XO6?usp=sharing)
+
+[Filters with Feature Maps](https://colab.research.google.com/drive/1FQF0lbchlKf554lJdntmA2qANngI1EIp?usp=sharing)
+
+[Filters from Slides](https://colab.research.google.com/drive/1-C73eL40c2p40j8XkjkNG96kUlAWDsot?usp=sharing)
+
+[Webcam](https://colab.research.google.com/drive/1_h_lnBQC42RFJ3z__NpQLtkuX6P0Uqqm?usp=sharing)
+
+[Conv1](https://colab.research.google.com/drive/1_IlVfU2u2AH0rb9n_yojHD85pG0dUr8f?usp=sharing)
+
+[Random Features](https://colab.research.google.com/drive/1bNuAdy9RlQWe4VR4_M6bQUPQDQl0QDFs?usp=sharing)
+
+
 <hr>
 
 ## Links
