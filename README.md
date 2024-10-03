@@ -73,6 +73,8 @@
 
 ## Links
 
+[Conv Types](https://github.com/vdumoulin/conv_arithmetic)
+
 [Alexnet Viz](https://www.youtube.com/watch?v=AgkfIQ4IGaM)
 
 [Linear Fit Demo](https://setosa.io/ev/ordinary-least-squares-regression/)
