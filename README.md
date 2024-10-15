@@ -2,6 +2,19 @@
 
 <img src="http://www.neural-forecasting.com/mlp_neural_nets-Dateien/image004.jpg">
 
+## Complex Systems
+
+[Documentary](https://www.youtube.com/watch?v=FvXwVZPOoBI) 
+[Notebook](https://colab.research.google.com/drive/1L9Oqcei2v9-MkaKadKU7NQ0v-tEmv4OB?usp=sharing)
+[Demos](https://williamedwardhahn.github.io/MathData24/demos/index.html)
+[Golly](https://sourceforge.net/projects/golly/)
+[Ready](https://github.com/GollyGang/ready)
+[Game of Life](https://playgameoflife.com/lexicon/acorn)
+[Life in Life](https://www.youtube.com/watch?v=xP5-iIeKXE8)
+[Cell Animation](https://www.youtube.com/results?search_query=harvard+cell+animation)
+[Nanotech](https://www.youtube.com/watch?v=zqyZ9bFl_qg)
+
+
 ## Wave / OURI Grant 
 
 [Wave](https://www.fau.edu/innovation-and-business-development/fau-wave/)
