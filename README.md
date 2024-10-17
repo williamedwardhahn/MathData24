@@ -2,6 +2,11 @@
 
 <img src="http://www.neural-forecasting.com/mlp_neural_nets-Dateien/image004.jpg">
 
+
+## Project Talks
+
+[Sign-up Sheet](https://docs.google.com/document/d/10ErV1drhLZWhO9eFx3LexGi_K2n-K-2unRCERGga9mQ/edit?usp=sharing)
+
 ## Complex Systems
 
 [Documentary](https://www.youtube.com/watch?v=FvXwVZPOoBI) 
