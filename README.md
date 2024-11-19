@@ -1,6 +1,16 @@
 # MathData24
 
+## Example Links:
+
+1. Colab (or github) Link (Public sharing turned on)
+2. Pitchdeck (Google Slides, Public sharing turned on)
+3. Website Link
+4. Youtube Video Link
+
+   
 # Final Project
+
+
 
 **Due Date:** Dec 5th 1:15pm – 3:45pm
 
