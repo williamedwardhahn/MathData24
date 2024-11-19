@@ -5,6 +5,8 @@
 
 # Final Project
 
+**Due Date:** Dec 5th 1:15pm – 3:45pm
+
 [Alexnet for Final Project](https://colab.research.google.com/drive/14NGFa-BeiUpls-9AuYXgNnI23l1QcpOf?usp=sharing)
 
 [Final](https://docs.google.com/document/d/1Mjdy4JKLJuxIMcZH7t2gpCGTvPHU0qEcphCNzO7wg-0/edit?usp=sharing)
