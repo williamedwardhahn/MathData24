@@ -1,15 +1,12 @@
 # MathData24
 
-<img src="http://www.neural-forecasting.com/mlp_neural_nets-Dateien/image004.jpg">
-
-
 # Final Project
 
 **Due Date:** Dec 5th 1:15pm – 3:45pm
 
-[Alexnet for Final Project](https://colab.research.google.com/drive/14NGFa-BeiUpls-9AuYXgNnI23l1QcpOf?usp=sharing)
+[Final Info Here!](https://docs.google.com/document/d/1Mjdy4JKLJuxIMcZH7t2gpCGTvPHU0qEcphCNzO7wg-0/edit?usp=sharing)
 
-[Final](https://docs.google.com/document/d/1Mjdy4JKLJuxIMcZH7t2gpCGTvPHU0qEcphCNzO7wg-0/edit?usp=sharing)
+[Alexnet for Final Project](https://colab.research.google.com/drive/14NGFa-BeiUpls-9AuYXgNnI23l1QcpOf?usp=sharing)
 
 [AntsBees](https://drive.google.com/drive/folders/1Je_gRF8RnhszAAbQhw2IzqM2_7byPVtL?usp=sharing)
 
